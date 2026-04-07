@@ -18,9 +18,10 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh """
-                    docker build -t ${DOCKERHUB_REPO}:${BUILD_NUMBER} .
-                    """
+                   // sh """
+                   // docker build -t ${DOCKERHUB_REPO}:${BUILD_NUMBER} .
+                   // """
+                     sh 'docker build -t myapp:${BUILD_NUMBER} .'
                 }
             }
         }
