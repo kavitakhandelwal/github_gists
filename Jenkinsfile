@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         DOCKERHUB_CREDENTIALS = credentials('dockerhub-creds') // Jenkins credentials ID
-        DOCKERHUB_REPO = "kavitakhandelwal/my-repo"
+        DOCKERHUB_REPO = "kavitakhandelwal/github_gists"
         HELM_NAMESPACE = "mynamespace"
         HELM_RELEASE = "myapp"
     }
