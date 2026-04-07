@@ -43,6 +43,7 @@ pipeline {
     post {
         always {
             sh 'docker logout'
+            echo "Cleaned up Docker credentials"
         }
     }
 }
