@@ -1,5 +1,9 @@
 pipeline {
-    image 'python:3.11'
+    agent {
+        docker {
+            image 'python:3.11'
+        }
+    }
 
     environment {
         DOCKERHUB_CREDENTIALS = credentials('dockerhub-creds') // Jenkins credentials ID
