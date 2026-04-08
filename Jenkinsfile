@@ -26,6 +26,14 @@ pipeline {
             }
         }
 
+        stage('API testing- Run Container and Execute Tests') {
+            steps {
+                sh 'docker run -d -p 8000:8000 --name myapp-test ${DOCKERHUB_REPO}:${BUILD_NUMBER}'
+                sh 'pytest tests/ --maxfail=1 --disable-warnings -q'
+                sh 'docker stop myapp-test && docker rm myapp-test'
+            }
+        }
+
         stage('Push to DockerHub') {
             steps {
                 script {
