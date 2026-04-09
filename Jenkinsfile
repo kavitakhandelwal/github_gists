@@ -5,11 +5,19 @@ pipeline {
     environment {
         DOCKERHUB_CREDENTIALS = credentials('dockerhub-creds') // Jenkins credentials ID
         DOCKERHUB_REPO = "kavitakhandelwal/github_gists"
-        HELM_NAMESPACE = "mynamespace"
-        HELM_RELEASE = "myapp"
+        KUBECONFIG = credentials('minikube-kubeconfig')
+        //HELM_NAMESPACE = "mynamespace"
+        //HELM_RELEASE = "myapp"
     }
 
     stages {
+        stage('Verify Cluster Access') {
+            steps {
+                sh 'kubectl cluster-info'
+                sh 'kubectl get nodes'
+            }
+        }
+
         stage('Checkout') {
             steps {
                 checkout scm
