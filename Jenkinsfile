@@ -13,8 +13,8 @@ pipeline {
     stages {
         stage('Verify Cluster Access') {
             steps {
-                sh 'kubectl cluster-info'
-                sh 'kubectl get nodes'
+                //sh 'kubectl cluster-info'
+                sh 'kubectl get pods --all-namespaces'
             }
         }
 
