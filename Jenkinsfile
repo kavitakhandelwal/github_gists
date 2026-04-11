@@ -5,7 +5,7 @@ pipeline {
     environment {
         DOCKERHUB_CREDENTIALS = credentials('dockerhub-creds') // Jenkins credentials ID
         DOCKERHUB_REPO = "kavitakhandelwal/github_gists"
-        KUBECONFIG = credentials('minikube-kubeconfig')
+        //KUBECONFIG = credentials('minikube-kubeconfig')
         //HELM_NAMESPACE = "mynamespace"
         //HELM_RELEASE = "myapp"
     }
