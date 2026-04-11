@@ -1,6 +1,8 @@
 pipeline {
     agent {
-       label 'kaniko-agent'
+        kubernetes {
+            label 'kaniko-agent'
+        }
     }
 
     environment {
