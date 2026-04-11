@@ -1,59 +1,68 @@
 pipeline {
-    agent any
-    
+    agent {
+        kubernetes {
+            yaml """
+apiVersion: v1
+kind: Pod
+spec:
+  serviceAccountName: jenkins-sa
+  containers:
+  - name: jenkins
+    image: jenkins_all_dependencies:latest
+    command:
+    - cat
+    tty: true
+
+  - name: kaniko
+    image: gcr.io/kaniko-project/executor:latest
+    command:
+    - cat
+    tty: true
+    volumeMounts:
+    - name: docker-config
+      mountPath: /kaniko/.docker
+
+  volumes:
+  - name: docker-config
+    secret:
+      secretName: dockerhub-secret
+"""
+        }
+    }
 
     environment {
-        DOCKERHUB_CREDENTIALS = credentials('dockerhub-creds') // Jenkins credentials ID
         DOCKERHUB_REPO = "kavitakhandelwal/github_gists"
-        //KUBECONFIG = credentials('minikube-kubeconfig')
-        //HELM_NAMESPACE = "mynamespace"
-        //HELM_RELEASE = "myapp"
     }
 
     stages {
+
         stage('Verify Cluster Access') {
             steps {
-                //sh 'kubectl cluster-info'
-                sh 'kubectl get pods'
+                container('jenkins') {
+                    sh 'kubectl get pods -n jenkins'
+                }
             }
         }
 
         stage('Checkout') {
             steps {
-                checkout scm
-            }
-        }
-
-        stage('Build Docker Image') {
-            steps {
-                script {
-                   sh """
-                    docker build -t ${DOCKERHUB_REPO}:${BUILD_NUMBER} .
-                   """
-                     
+                container('jenkins') {
+                    checkout scm
                 }
             }
         }
 
-        
-        stage('Push to DockerHub') {
+        stage('Build & Push Image (Kaniko)') {
             steps {
-                script {
-                    sh """
-                    echo ${DOCKERHUB_CREDENTIALS_PSW} | docker login -u ${DOCKERHUB_CREDENTIALS_USR} --password-stdin
-                    docker push ${DOCKERHUB_REPO}:${BUILD_NUMBER}
-                    """
+                container('kaniko') {
+                    sh '''
+                    /kaniko/executor \
+                      --dockerfile=Dockerfile \
+                      --context=$PWD \
+                      --destination=${DOCKERHUB_REPO}:${BUILD_NUMBER}
+                    '''
                 }
             }
-        }
-
-        
-    }
-
-    post {
-        always {
-            sh 'docker logout'
-            echo "Cleaned up Docker credentials"
         }
     }
 }
