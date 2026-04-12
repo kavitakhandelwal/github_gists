@@ -39,7 +39,7 @@ spec:
                 container('build-tools') {
                     // This container handles the Git checkout and cluster checks
                     checkout scm
-                    sh 'kubectl get pods -n jenkins'
+                    //sh 'kubectl get pods -n jenkins'
                 }
             }
         }
