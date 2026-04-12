@@ -58,5 +58,21 @@ spec:
             }
         }
     }
+
+    stage('Deploy to Minikube') {
+    steps {
+        container('build-tools') {
+            // This replaces the image tag in the YAML dynamically
+            sh "sed -i 's|image: kavitakhandelwal/github_gists:latest|image: kavitakhandelwal/github_gists:${BUILD_NUMBER}-NEW|g' deploy/deployment.yaml"
+            
+            // Apply the deployment
+            sh 'kubectl apply -f deploy/deployment.yaml'
+            
+            sh 'kubectl apply -f deploy/service.yaml'
+            // Verify rollout
+            sh 'kubectl rollout status deployment/github-gists-api'
+        }
     }
+    }
+}
 }

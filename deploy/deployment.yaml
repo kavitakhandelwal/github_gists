@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: github-gists-api
+  labels:
+    app: gists-api
+spec:
+  replicas: 1 
+  selector:
+    matchLabels:
+      app: gists-api
+  template:
+    metadata:
+      labels:
+        app: gists-api
+    spec:
+      containers:
+      - name: api-container
+        image: kavitakhandelwal/github_gists:20-NEW # Use your actual tag
+        ports:
+        - containerPort: 8080 # Change this to your app's internal port
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "500m"
+            memory: "256Mi"
