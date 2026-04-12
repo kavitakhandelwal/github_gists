@@ -6,6 +6,7 @@ pipeline {
 apiVersion: v1
 kind: Pod
 spec:
+  serviceAccountName: jenkins-sa
   containers:
   - name: build-tools
     image: alpine/k8s:1.29.2  # Lightweight image with kubectl, helm, and git
