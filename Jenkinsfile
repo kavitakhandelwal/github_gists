@@ -50,9 +50,9 @@ spec:
         stage('Build & Push') {
             steps {
                 container('kaniko') {
-                    sh 'ls -la /kaniko/.docker/ && cat /kaniko/.docker/config.json'
+                   //sh 'ls -la /kaniko/.docker/ && cat /kaniko/.docker/config.json'
                     // This container handles ONLY the image building
-                    sh '/kaniko/executor --dockerfile=Dockerfile --context=dir://${WORKSPACE} --destination=${DOCKERHUB_REPO}:${BUILD_NUMBER}'
+                    sh '/kaniko/executor --dockerfile=Dockerfile --context=dir://${WORKSPACE} --destination=${DOCKERHUB_REPO}:${BUILD_NUMBER}-NEW'
                 }
             }
         }
