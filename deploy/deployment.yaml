@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: api-container
-        image: kavitakhandelwal/github_gists:20-NEW # Use your actual tag
+        image: kavitakhandelwal/github_gists:latest # Use your actual tag
         ports:
         - containerPort: 8080 # Change this to your app's internal port
         resources:
