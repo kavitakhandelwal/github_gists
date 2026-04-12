@@ -1,43 +1,54 @@
 pipeline {
     agent {
         kubernetes {
-            cloud 'Kubernetes'
-            label 'kaniko-agent'
-            instanceCap 2
+            cloud 'kubernetes'
+            yaml '''
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+  - name: build-tools
+    image: alpine/k8s:1.29.2  # Lightweight image with kubectl, helm, and git
+    command: ['cat']
+    tty: true
+  - name: kaniko
+    image: gcr.io/kaniko-project/executor:debug
+    command: ['sleep']
+    args: ['99d']
+    volumeMounts:
+      - name: kaniko-secret
+        mountPath: /kaniko/.docker
+  volumes:
+    - name: kaniko-secret
+      secret:
+        secretName: dockerhub-secret
+        items:
+          - key: .dockerconfigjson
+            path: config.json
+'''
         }
     }
-
     environment {
         DOCKERHUB_REPO = "kavitakhandelwal/github_gists"
     }
 
-    stages {
 
-        stage('Verify Cluster Access') {
+    stages {
+        stage('Checkout & Verify') {
             steps {
-                container('jenkins') {
+                container('build-tools') {
+                    // This container handles the Git checkout and cluster checks
+                    checkout scm
                     sh 'kubectl get pods -n jenkins'
                 }
             }
         }
 
-        stage('Checkout') {
-            steps {
-                container('jenkins') {
-                    checkout scm
-                }
-            }
-        }
-
-        stage('Build & Push Image (Kaniko)') {
+        stage('Build & Push') {
             steps {
                 container('kaniko') {
-                    sh '''
-                    /kaniko/executor \
-                      --dockerfile=Dockerfile \
-                      --context=$PWD \
-                      --destination=${DOCKERHUB_REPO}:${BUILD_NUMBER}
-                    '''
+                    // This container handles ONLY the image building
+                    sh '/kaniko/executor --dockerfile=Dockerfile --context=dir://${WORKSPACE} --destination=${DOCKERHUB_REPO}:${BUILD_NUMBER}'
                 }
             }
         }
