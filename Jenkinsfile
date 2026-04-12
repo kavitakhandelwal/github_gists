@@ -3,6 +3,7 @@ pipeline {
         kubernetes {
             cloud 'Kubernetes'
             label 'kaniko-agent'
+            instanceCap 2
         }
     }
 
